@@ -1,23 +1,47 @@
 import subprocess
 import os
 import psutil
+import socket
 
+HOST = "127.0.0.1"
+PORT = 9999
+
+server_name = "utsav_307"
 shell_executable = "/bin/bash"
-
 home_dir = os.path.expanduser("~")
 
-terminal = subprocess.Popen(
-    [shell_executable],
-    stdin=subprocess.PIPE,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.STDOUT,
-    text=True,
-    bufsize=1,
-    cwd = home_dir,
-)
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
 
-terminal_pid = psutil.Process(terminal.pid)
-server_name = "utsav_307"
+    client_connection, addr = s.accept()
+
+    with client_connection:
+        print(f"Connected by {addr}")
+        data = client_connection.recv(1024)
+        
+        if "start_terminal" in data:
+
+            terminal = subprocess.Popen(
+                [shell_executable],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                cwd = home_dir,
+            )
+            terminal_pid = psutil.Process(terminal.pid)
+            path = terminal_pid.cwd()
+
+            s.sendall(b"config|{server_name}|{path}")
+
+            
+
+
+
+
+
 
 while True:
 
