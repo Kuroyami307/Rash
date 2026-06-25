@@ -19,8 +19,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     with client_connection:
         print(f"Connected by {addr}")
         data = client_connection.recv(1024)
-        
-        if "start_terminal" in data:
+        data_str = data.decode('utf-8')
+
+        if "start_terminal" in data_str:
 
             terminal = subprocess.Popen(
                 [shell_executable],

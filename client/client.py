@@ -17,7 +17,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             elif len(args) == 2:
                 print("Invalid Arguments.\nInclude the port number.\n")
             
-            else:
+            elif len(args) > 3:
                 print("Invalid Arguments.\nCan only have ip address and port number.\n")
             
             
@@ -33,9 +33,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         
     s.sendall(b"start_terminal")
     response = s.recv(1024)
+    response_str = response.decode('utf-8')
 
-    if "config" in response:
-        response_args = response.split("|")
+    if "config" in response_str:
+        response_args = response_str.split("|")
         server_name = response_args[1]
         path = response_args[2]
 
